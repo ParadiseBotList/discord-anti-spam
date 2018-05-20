@@ -3,9 +3,22 @@ const client = new Discord.Client();
 
 var schedule = require('node-schedule');
 
-const guildID = "ID HERE";
+var settings = require("./config.json")
+
+const guildID = "";
 var server = ''
 var counter = []
+
+
+
+// number of 'heavy' actions a staff can do in time limit before setting
+// them to cooldown
+const actionsLimit = 1
+
+const cooldownRoleID = ""
+const staffRoleID = ""
+
+
 
 client.on('ready', () => {
   console.log(`Logged in as ${client.user.tag}!`);
@@ -99,8 +112,17 @@ function updateCounter(user) {
 function checkForSpam(userID) {
   // console.log(server.members)
   // console.log(counter[server.members.get(userID])
-  if (counter[userID] > 3) {
-    console.log(userID + "is on cooldown!");
+  if (counter[userID] > actionsLimit) {
+    console.log("test")
+
+    server.members.get(userID).addRole(cooldownRoleID).then (
+      console.log(userID + "is on cooldown!")
+    )
+
+    server.members.get(userID).removeRole(staffRoleID).then (
+      console.log(userID + "'s mod powers are stripped'!")
+    )
+
   }
 }
 
@@ -109,12 +131,13 @@ function checkForSpam(userID) {
 //
 // TIMERS
 //
-const ALERT_FREQUENCY = "0,15,22,23,32,34,35,45 * * * *"   // default every 15 mins
+const ALERT_FREQUENCY = "0,8,10,20,30,40,50 * * * *"   // default every 15 mins
 
 var resetCounter = schedule.scheduleJob(ALERT_FREQUENCY, function(){
   for (var user in counter) {
     counter[user] = 0;
   }
+  console.log("Action counters back to 0.")
 });
 
-client.login('ID HERE');
+client.login('LOG-IN');
